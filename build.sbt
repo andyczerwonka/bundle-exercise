@@ -1,6 +1,6 @@
 name := "bundle-exercise"
 
-organization := "com.andyczerwonka"
+organization := "arcticpenguin"
 
 version := "0.0.1"
 
@@ -13,5 +13,3 @@ libraryDependencies ++= Seq(
   "org.scalatest" %% "scalatest" % "3.0.1" % "test" withSources() withJavadoc(),
   "org.scalacheck" %% "scalacheck" % "1.13.4" % "test" withSources() withJavadoc()
 )
-
-initialCommands := "import com.andyczerwonka.bundleexercise._"

@@ -1,5 +1,3 @@
-package com.andyczerwonka.bundleexercise
-
 import org.scalatest.FunSpec
 
 class HelloWorldSpec extends FunSpec {
