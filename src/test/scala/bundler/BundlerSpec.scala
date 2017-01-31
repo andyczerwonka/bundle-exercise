@@ -32,9 +32,10 @@ class BundlerSpec extends FlatSpec with Matchers {
     bundler.contents.totalPrice should be (2.19)
     bundler.contents.totalDiscount should be (1.79)
     bundler.contents.remaining should be (empty)
+    bundler.contents.bundles should contain only twoApplesBundle.head
   }
 
-  it should "charge $4.38 for four apples" in {
+  it should "allow for the sampe bundle to be applied twice" in {
     val cart = new Cart()
     cart.add(apple, apple, apple, apple)
     val bundler = new Bundler(bothBundles, cart)
@@ -44,7 +45,7 @@ class BundlerSpec extends FlatSpec with Matchers {
     bundler.contents.remaining should be (empty)
   }
 
-  it should "charge full price for apples without the apples bundle" in {
+  it should "charge full price for items when no bundle applies" in {
     val cart = new Cart()
     cart.add(apple, apple)
     val bundler = new Bundler(Nil, cart)
@@ -91,7 +92,7 @@ class BundlerSpec extends FlatSpec with Matchers {
     bundler.contents.remaining should be (empty)
   }
 
-  it should "not be used if it's more expensive than retail" in {
+  it should "not apply bundles that are more expensive than retail" in {
     val tomato = Item("Tomato", 1.0)
     val twoTomatoBundle = Seq(Bundle(List(tomato, tomato), 3.0))
     val cart = new Cart()
@@ -103,7 +104,7 @@ class BundlerSpec extends FlatSpec with Matchers {
     bundler.contents.remaining should contain theSameElementsAs List(tomato, tomato)
   }
 
-  it should "find the cheapest bundle, which in this case is the six-tomatoe bundle" in {
+  it should "find the cheapest bundle when more than one bundle apply" in {
     val tomato = Item("Tomato", 1.0)
     val breadFreeTomatoBundle = Seq(Bundle(List(bread, tomato), 3.0))
     val sixTomatoBundle = Seq(Bundle(List(tomato, tomato, tomato, tomato, tomato, tomato), 2.0))
