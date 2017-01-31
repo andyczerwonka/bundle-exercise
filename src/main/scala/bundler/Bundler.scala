@@ -38,7 +38,7 @@ class Bundler(available: Seq[Bundle], cart: Cart) {
 
   @tailrec
   private def bundle(all: Seq[Bundle], accumulator: List[Bundle], remaining: Seq[Item]): BundledItems = {
-    all.find(found => remaining.intersect(found.items).length == found.items.length) match {
+    all.find(bundle => remaining.intersect(bundle.items).length == bundle.items.length) match {
       case Some(b) => bundle(all, b :: accumulator, remaining.diff(b.items))
       case None => BundledItems(accumulator, remaining)
     }
