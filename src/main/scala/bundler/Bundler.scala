@@ -19,12 +19,12 @@ case class Bundle(items: Seq[Item], price: Double) {
 class Bundler(available: Seq[Bundle], cart: Cart) {
 
   case class BundledItems(bundles: Seq[Bundle], remaining: Seq[Item]) {
-    lazy val total: Double = {
+    lazy val totalPrice: Double = {
       val bundledTotal = bundles.foldLeft(0.0)(_ + _.price)
       val remainderTotal = remaining.foldLeft(0.0)(_ + _.price)
       bundledTotal + remainderTotal
     }
-    lazy val discount: Double = bundles.foldLeft(0.0)(_ + _.discount)
+    lazy val totalDiscount: Double = bundles.foldLeft(0.0)(_ + _.discount)
   }
 
   lazy val contents: BundledItems = {

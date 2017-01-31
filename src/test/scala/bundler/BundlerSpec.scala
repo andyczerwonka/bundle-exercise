@@ -19,15 +19,18 @@ class BundlerSpec extends FlatSpec with Matchers {
     val cart = new Cart()
     cart.add(apple)
     val bundler = new Bundler(bothBundles, cart)
-    bundler.contents.total should equal (1.99)
+    bundler.contents.totalPrice should equal (1.99)
+    bundler.contents.totalDiscount should be (0.0)
+    bundler.contents.bundles should be (empty)
+    bundler.contents.remaining should contain only apple
   }
 
   it should "charge $2.19 for two apples" in {
     val cart = new Cart()
     cart.add(apple, apple)
     val bundler = new Bundler(bothBundles, cart)
-    bundler.contents.total should be (2.19)
-    bundler.contents.discount should be (1.79)
+    bundler.contents.totalPrice should be (2.19)
+    bundler.contents.totalDiscount should be (1.79)
     bundler.contents.remaining should be (empty)
   }
 
@@ -35,18 +38,18 @@ class BundlerSpec extends FlatSpec with Matchers {
     val cart = new Cart()
     cart.add(apple, apple, apple, apple)
     val bundler = new Bundler(bothBundles, cart)
-    bundler.contents.total should be (4.38)
-    bundler.contents.discount should be (3.58)
+    bundler.contents.totalPrice should be (4.38)
+    bundler.contents.totalDiscount should be (3.58)
     bundler.contents.bundles should contain theSameElementsAs Vector(twoApplesBundle.head, twoApplesBundle.head)
     bundler.contents.remaining should be (empty)
   }
 
-  it should "charge $3.98 for two apples without the apples bundle" in {
+  it should "charge full price for apples without the apples bundle" in {
     val cart = new Cart()
     cart.add(apple, apple)
     val bundler = new Bundler(Nil, cart)
-    bundler.contents.total should be (3.98)
-    bundler.contents.discount should be (0.0)
+    bundler.contents.totalPrice should be (3.98)
+    bundler.contents.totalDiscount should be (0.0)
     bundler.contents.bundles shouldBe empty
   }
 
@@ -54,17 +57,18 @@ class BundlerSpec extends FlatSpec with Matchers {
     val cart = new Cart()
     cart.add(bread, butter, butter)
     val bundler = new Bundler(bothBundles, cart)
-    bundler.contents.total should be (6.0)
-    bundler.contents.discount should be (3.0)
+    bundler.contents.totalPrice should be (6.0)
+    bundler.contents.totalDiscount should be (3.0)
     bundler.contents.bundles should contain theSameElementsAs freeButterBundle
+    bundler.contents.remaining should be (empty)
   }
 
   it should "charge $8.19 for bread, two apples and two butter" in {
     val cart = new Cart()
     cart.add(bread, apple, apple, butter, butter)
     val bundler = new Bundler(bothBundles, cart)
-    bundler.contents.total should be (8.19)
-    bundler.contents.discount should be (4.79 +- epsilon)
+    bundler.contents.totalPrice should be (8.19)
+    bundler.contents.totalDiscount should be (4.79 +- epsilon)
     bundler.contents.bundles should contain theSameElementsAs bothBundles
     bundler.contents.remaining should be (empty)
   }
@@ -73,16 +77,16 @@ class BundlerSpec extends FlatSpec with Matchers {
     val cart = new Cart()
     cart.add(bread, apple, apple, butter, butter, butter)
     val bundler = new Bundler(bothBundles, cart)
-    bundler.contents.total should be (11.19)
-    bundler.contents.discount should be (4.79 +- epsilon)
+    bundler.contents.totalPrice should be (11.19)
+    bundler.contents.totalDiscount should be (4.79 +- epsilon)
     bundler.contents.remaining should contain only butter
   }
 
   it should "charge $0 for an empty cart" in {
     val cart = new Cart()
     val bundler = new Bundler(bothBundles, cart)
-    bundler.contents.total should be (0.0)
-    bundler.contents.discount should be (0.0)
+    bundler.contents.totalPrice should be (0.0)
+    bundler.contents.totalDiscount should be (0.0)
     bundler.contents.bundles should be (empty)
     bundler.contents.remaining should be (empty)
   }
@@ -93,8 +97,8 @@ class BundlerSpec extends FlatSpec with Matchers {
     val cart = new Cart()
     cart.add(tomato, tomato)
     val bundler = new Bundler(twoTomatoBundle, cart)
-    bundler.contents.total should be (2.0)
-    bundler.contents.discount should be (0.0)
+    bundler.contents.totalPrice should be (2.0)
+    bundler.contents.totalDiscount should be (0.0)
     bundler.contents.bundles should be (empty)
     bundler.contents.remaining should contain theSameElementsAs List(tomato, tomato)
   }
@@ -106,8 +110,8 @@ class BundlerSpec extends FlatSpec with Matchers {
     val cart = new Cart()
     cart.add(bread, tomato, tomato, tomato, tomato, tomato, tomato)
     val bundler = new Bundler(breadFreeTomatoBundle ++ sixTomatoBundle, cart)
-    bundler.contents.total should be (5.0)
-    bundler.contents.discount should be (4.0)
+    bundler.contents.totalPrice should be (5.0)
+    bundler.contents.totalDiscount should be (4.0)
     bundler.contents.bundles should contain theSameElementsAs sixTomatoBundle
     bundler.contents.remaining should contain only bread
   }
