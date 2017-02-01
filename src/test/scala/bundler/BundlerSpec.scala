@@ -1,6 +1,7 @@
 package bundler
 
 import org.scalatest._
+import Bundler._
 
 class BundlerSpec extends FlatSpec with Matchers {
 
@@ -18,78 +19,78 @@ class BundlerSpec extends FlatSpec with Matchers {
   "The Bundler" should "charge $1.99 for one apple" in {
     val cart = new Cart()
     cart.add(apple)
-    val bundler = new Bundler(bothBundles, cart)
-    bundler.contents.totalPrice should equal (1.99)
-    bundler.contents.totalDiscount should be (0.0)
-    bundler.contents.bundles should be (empty)
-    bundler.contents.remaining should contain only apple
+    val bundled = bundle(bothBundles, cart)
+    bundled.totalPrice should equal (1.99)
+    bundled.totalDiscount should be (0.0)
+    bundled.bundles should be (empty)
+    bundled.remaining should contain only apple
   }
 
   it should "charge $2.19 for two apples" in {
     val cart = new Cart()
     cart.add(apple, apple)
-    val bundler = new Bundler(bothBundles, cart)
-    bundler.contents.totalPrice should be (2.19)
-    bundler.contents.totalDiscount should be (1.79)
-    bundler.contents.remaining should be (empty)
-    bundler.contents.bundles should contain only twoApplesBundle.head
+    val bundled = bundle(bothBundles, cart)
+    bundled.totalPrice should be (2.19)
+    bundled.totalDiscount should be (1.79)
+    bundled.remaining should be (empty)
+    bundled.bundles should contain only twoApplesBundle.head
   }
 
   it should "allow for the sampe bundle to be applied twice" in {
     val cart = new Cart()
     cart.add(apple, apple, apple, apple)
-    val bundler = new Bundler(bothBundles, cart)
-    bundler.contents.totalPrice should be (4.38)
-    bundler.contents.totalDiscount should be (3.58)
-    bundler.contents.bundles should contain theSameElementsAs Vector(twoApplesBundle.head, twoApplesBundle.head)
-    bundler.contents.remaining should be (empty)
+    val bundled = bundle(bothBundles, cart)
+    bundled.totalPrice should be (4.38)
+    bundled.totalDiscount should be (3.58)
+    bundled.bundles should contain theSameElementsAs Vector(twoApplesBundle.head, twoApplesBundle.head)
+    bundled.remaining should be (empty)
   }
 
   it should "charge full price for items when no bundle applies" in {
     val cart = new Cart()
     cart.add(apple, apple)
-    val bundler = new Bundler(Nil, cart)
-    bundler.contents.totalPrice should be (3.98)
-    bundler.contents.totalDiscount should be (0.0)
-    bundler.contents.bundles shouldBe empty
+    val bundled = bundle(Nil, cart)
+    bundled.totalPrice should be (3.98)
+    bundled.totalDiscount should be (0.0)
+    bundled.bundles shouldBe empty
   }
 
   it should "charge $6.00 for bread and two butter" in {
     val cart = new Cart()
     cart.add(bread, butter, butter)
-    val bundler = new Bundler(bothBundles, cart)
-    bundler.contents.totalPrice should be (6.0)
-    bundler.contents.totalDiscount should be (3.0)
-    bundler.contents.bundles should contain theSameElementsAs freeButterBundle
-    bundler.contents.remaining should be (empty)
+    val bundled = bundle(bothBundles, cart)
+    bundled.totalPrice should be (6.0)
+    bundled.totalDiscount should be (3.0)
+    bundled.bundles should contain theSameElementsAs freeButterBundle
+    bundled.remaining should be (empty)
   }
 
   it should "charge $8.19 for bread, two apples and two butter" in {
     val cart = new Cart()
     cart.add(bread, apple, apple, butter, butter)
-    val bundler = new Bundler(bothBundles, cart)
-    bundler.contents.totalPrice should be (8.19)
-    bundler.contents.totalDiscount should be (4.79 +- epsilon)
-    bundler.contents.bundles should contain theSameElementsAs bothBundles
-    bundler.contents.remaining should be (empty)
+    val bundled = bundle(bothBundles, cart)
+    bundled.totalPrice should be (8.19)
+    bundled.totalDiscount should be (4.79 +- epsilon)
+    bundled.bundles should contain theSameElementsAs bothBundles
+    bundled.remaining should be (empty)
   }
 
   it should "charge $11.19 for bread, two apples and three butter" in {
     val cart = new Cart()
     cart.add(bread, apple, apple, butter, butter, butter)
-    val bundler = new Bundler(bothBundles, cart)
-    bundler.contents.totalPrice should be (11.19)
-    bundler.contents.totalDiscount should be (4.79 +- epsilon)
-    bundler.contents.remaining should contain only butter
+    val bundled = bundle(bothBundles, cart)
+    bundled.totalPrice should be (11.19)
+    bundled.totalDiscount should be (4.79 +- epsilon)
+    bundled.remaining should contain only butter
   }
 
   it should "charge $0 for an empty cart" in {
     val cart = new Cart()
-    val bundler = new Bundler(bothBundles, cart)
-    bundler.contents.totalPrice should be (0.0)
-    bundler.contents.totalDiscount should be (0.0)
-    bundler.contents.bundles should be (empty)
-    bundler.contents.remaining should be (empty)
+    val bundled = bundle(bothBundles, cart)
+    bundled.totalPrice should be (0.0)
+    bundled.totalDiscount should be (0.0)
+    bundled.bundles should be (empty)
+    bundled.remaining should be (empty)
   }
 
   it should "not apply bundles that are more expensive than retail" in {
@@ -97,11 +98,11 @@ class BundlerSpec extends FlatSpec with Matchers {
     val twoTomatoBundle = Seq(Bundle(List(tomato, tomato), 3.0))
     val cart = new Cart()
     cart.add(tomato, tomato)
-    val bundler = new Bundler(twoTomatoBundle, cart)
-    bundler.contents.totalPrice should be (2.0)
-    bundler.contents.totalDiscount should be (0.0)
-    bundler.contents.bundles should be (empty)
-    bundler.contents.remaining should contain theSameElementsAs List(tomato, tomato)
+    val bundled = bundle(twoTomatoBundle, cart)
+    bundled.totalPrice should be (2.0)
+    bundled.totalDiscount should be (0.0)
+    bundled.bundles should be (empty)
+    bundled.remaining should contain theSameElementsAs List(tomato, tomato)
   }
 
   it should "find the cheapest bundle when more than one bundle apply" in {
@@ -110,11 +111,11 @@ class BundlerSpec extends FlatSpec with Matchers {
     val sixTomatoBundle = Seq(Bundle(List(tomato, tomato, tomato, tomato, tomato, tomato), 2.0))
     val cart = new Cart()
     cart.add(bread, tomato, tomato, tomato, tomato, tomato, tomato)
-    val bundler = new Bundler(breadFreeTomatoBundle ++ sixTomatoBundle, cart)
-    bundler.contents.totalPrice should be (5.0)
-    bundler.contents.totalDiscount should be (4.0)
-    bundler.contents.bundles should contain theSameElementsAs sixTomatoBundle
-    bundler.contents.remaining should contain only bread
+    val bundled = bundle(breadFreeTomatoBundle ++ sixTomatoBundle, cart)
+    bundled.totalPrice should be (5.0)
+    bundled.totalDiscount should be (4.0)
+    bundled.bundles should contain theSameElementsAs sixTomatoBundle
+    bundled.remaining should contain only bread
   }
 
 }

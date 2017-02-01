@@ -10,7 +10,8 @@ For this exercise, produce an API and implementation for a service that accepts 
 
 ## Implementation Notes
 
-1. Assume focus on algorithm, not publicly facing API completeness
 1. No shared mutable state, e.g. immutable types, i.e. no `var`, only `val`, etc.
-1. Test are mostly written in concrete terms according to the spec to help the reader associate the test with the requirement, but are general in nature. There are also some more general tests.
+1. Bundling is a pure stateless function, no side effects.
+1. Some tests are mostly written in concrete terms according to the spec to help the reader associate the test with the requirement but are general in nature. There are also some more general tests.
 1. No external dependencies. No functional libraries, e.g. scalaz, cats, etc. Just standard Scala.
+1. Tests can be run via `sbt test`.

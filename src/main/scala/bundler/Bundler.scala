@@ -16,7 +16,7 @@ case class Bundle(items: Seq[Item], price: Double) {
   val discount: Double = items.foldLeft(0.0)(_ + _.price) - price
 }
 
-class Bundler(available: Seq[Bundle], cart: Cart) {
+object Bundler {
 
   case class BundledItems(bundles: Seq[Bundle], remaining: Seq[Item]) {
     lazy val totalPrice: Double = {
@@ -27,21 +27,21 @@ class Bundler(available: Seq[Bundle], cart: Cart) {
     lazy val totalDiscount: Double = bundles.foldLeft(0.0)(_ + _.discount)
   }
 
-  lazy val contents: BundledItems = {
+  def bundle(available: Seq[Bundle], cart: Cart): BundledItems = {
+    @tailrec
+    def bundle0(all: Seq[Bundle], accumulator: List[Bundle], remaining: Seq[Item]): BundledItems = {
+      all.find(bundle => remaining.intersect(bundle.items).length == bundle.items.length) match {
+        case Some(found) => bundle0(all, found :: accumulator, remaining.diff(found.items))
+        case None => BundledItems(accumulator, remaining)
+      }
+    }
+
     val cartItems = cart.contents()
     val applicableBundles = available
       .filter(_.discount > 0)
       .filter(b => cartItems.intersect(b.items).length == b.items.length)
     val bestDealFirst = applicableBundles.sortWith(_.discount > _.discount)
-    bundle(bestDealFirst, Nil, cartItems)
-  }
-
-  @tailrec
-  private def bundle(all: Seq[Bundle], accumulator: List[Bundle], remaining: Seq[Item]): BundledItems = {
-    all.find(bundle => remaining.intersect(bundle.items).length == bundle.items.length) match {
-      case Some(found) => bundle(all, found :: accumulator, remaining.diff(found.items))
-      case None => BundledItems(accumulator, remaining)
-    }
+    bundle0(bestDealFirst, Nil, cartItems)
   }
 
 
