@@ -52,7 +52,7 @@ class BundlerSpec extends FlatSpec with Matchers {
     val bundled = bundle(Nil, cart)
     bundled.totalPrice should be (3.98)
     bundled.totalDiscount should be (0.0)
-    bundled.bundles shouldBe empty
+    bundled.bundles should be (empty)
   }
 
   it should "charge $6.00 for bread and two butter" in {
@@ -116,6 +116,19 @@ class BundlerSpec extends FlatSpec with Matchers {
     bundled.totalDiscount should be (4.0)
     bundled.bundles should contain theSameElementsAs sixTomatoBundle
     bundled.remaining should contain only bread
+  }
+
+  it should "find the cheapest bundle even when many instances of lesser bundle out performs a better bundle" in {
+    val tomato = Item("Tomato", 1.0)
+    val breadBundle = Seq(Bundle(List(bread, tomato), 3.5))
+    val threeTomatoBundle = Seq(Bundle(List(tomato, tomato, tomato), 2.0))
+    val cart = new Cart()
+    cart.add(bread, bread, bread, tomato, tomato, tomato)
+    val bundled = bundle(breadBundle ++ threeTomatoBundle, cart)
+    bundled.totalPrice should be (10.5)
+    bundled.totalDiscount should be (3.0)
+    bundled.bundles should contain theSameElementsAs List(breadBundle.head, breadBundle.head, breadBundle.head)
+    bundled.remaining should be (empty)
   }
 
 }
