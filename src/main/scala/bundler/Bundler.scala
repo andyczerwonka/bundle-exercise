@@ -37,11 +37,11 @@ object Bundler {
     }
 
     val cartItems = cart.contents()
-    val applicableBundles = available
+    val applicableBundles = available.view
       .filter(_.discount > 0)
       .filter(b => cartItems.intersect(b.items).length == b.items.length)
-    val bestDealFirst = applicableBundles.sortWith(_.discount > _.discount)
-    bundle0(bestDealFirst, Nil, cartItems)
+      .sortWith(_.discount > _.discount)
+    bundle0(applicableBundles, Nil, cartItems)
   }
 
 
