@@ -126,7 +126,7 @@ class BundlerSpec extends FlatSpec with Matchers {
     cart.add(bread, bread, bread, tomato, tomato, tomato)
     val bundled = bundle(breadBundle ++ threeTomatoBundle, cart)
     bundled.totalPrice should be (10.5)
-    bundled.totalDiscount should be (3.0)
+    bundled.totalDiscount should be (1.5)
     bundled.bundles should contain theSameElementsAs List(breadBundle.head, breadBundle.head, breadBundle.head)
     bundled.remaining should be (empty)
   }
