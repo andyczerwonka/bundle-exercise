@@ -1,5 +1,5 @@
-### Current Algorithm Does Not Find Optimal Solution
-See Issue [#2](https://github.com/andyczerwonka/bundle-exercise/issues/2) and [the test that proves it.](https://github.com/andyczerwonka/bundle-exercise/commit/3d78f68d1d5c3d7c863ade3a12ad16fe7435ddf4)
+### Update (Feb 4, 2017)
+The initial version [made an invalid assumption](https://github.com/andyczerwonka/bundle-exercise/issues/2) about the how to find the optimal solution. Even though the latest version now passes [the test that originally failed](https://github.com/andyczerwonka/bundle-exercise/commit/3d78f68d1d5c3d7c863ade3a12ad16fe7435ddf4), the solution is still not optimal for all cases. The algorithm is still greedy - it's just a little smarted about it. Dynamic programming might be a good choice here given we have integer optimization problem - I'll see what options we have here within the Scala ecosystem.
 
 # Bundle Pricing
 This exercise is a common problem in e-commerce and brick-and-mortar retail systems.
