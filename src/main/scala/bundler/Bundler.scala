@@ -58,8 +58,6 @@ object Bundler {
       case b: BundledCart if b.totalDiscount > 0 => Some(b)
       case _ => None
     } else None
-
   }
-
-
+  
 }
