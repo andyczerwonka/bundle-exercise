@@ -13,49 +13,49 @@ class Cart {
 }
 
 case class Bundle(items: Seq[Item], price: Double) {
-  val discount: Double = items.foldLeft(0.0)(_ + _.price) - price
+  lazy val discount: Double = items.foldLeft(0.0)(_ + _.price) - price
 }
 
 object Bundler {
 
-  case class BundledItems(bundles: Seq[Bundle], remaining: Seq[Item]) {
+  case class BundledCart(bundles: Seq[Bundle], remaining: Seq[Item]) {
     lazy val totalPrice: Double = {
       val bundledTotal = bundles.foldLeft(0.0)(_ + _.price)
       val remainderTotal = remaining.foldLeft(0.0)(_ + _.price)
       bundledTotal + remainderTotal
     }
-    val totalDiscount: Double = bundles.foldLeft(0.0)(_ + _.discount)
+    lazy val totalDiscount: Double = bundles.foldLeft(0.0)(_ + _.discount)
   }
 
-  def bundle(available: Seq[Bundle], cart: Cart): BundledItems = {
+  def bundle(available: Seq[Bundle], cart: Cart): BundledCart = {
     @tailrec
-    def bundle0(all: Seq[Bundle], accumulator: Seq[Bundle], remaining: Seq[Item]): BundledItems = {
+    def bundle0(all: Seq[Bundle], accumulator: Seq[Bundle], remaining: Seq[Item]): BundledCart = {
       findBestDiscount(all, remaining) match {
         case Some(found) => bundle0(all, found.bundles ++ accumulator, found.remaining)
-        case None => BundledItems(accumulator, remaining)
+        case None => BundledCart(accumulator, remaining)
       }
     }
 
     bundle0(available.filter(_.discount > 0), Nil, cart.contents())
   }
 
-  private[this] def findBestDiscount(all: Seq[Bundle], items: Seq[Item]): Option[BundledItems] = {
-    def search(bundle: Bundle): BundledItems = {
+  private[this] def findBestDiscount(all: Seq[Bundle], items: Seq[Item]): Option[BundledCart] = {
+    def search(bundle: Bundle): BundledCart = {
       @tailrec
-      def search0(bundle: Bundle, accumulator: List[Bundle], remaining: Seq[Item]): BundledItems = {
+      def search0(bundle: Bundle, accumulator: List[Bundle], remaining: Seq[Item]): BundledCart = {
         val diff = remaining.diff(bundle.items)
         if (diff.length == remaining.length - bundle.items.length)
           search0(bundle, bundle :: accumulator, diff)
         else
-          BundledItems(accumulator, remaining)
+          BundledCart(accumulator, remaining)
       }
 
       search0(bundle, Nil, items)
     }
 
-    val xs = all.par.map(search)
-    if (xs.nonEmpty) xs.maxBy(_.totalDiscount) match {
-      case b: BundledItems if b.totalDiscount > 0 => Some(b)
+    val candidates = all.par.map(search)
+    if (candidates.nonEmpty) candidates.maxBy(_.totalDiscount) match {
+      case b: BundledCart if b.totalDiscount > 0 => Some(b)
       case _ => None
     } else None
 
