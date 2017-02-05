@@ -1,5 +1,5 @@
 ### Update (Feb 4, 2017)
-The initial version [made an invalid assumption](https://github.com/andyczerwonka/bundle-exercise/issues/2) about the how to find the optimal solution. Even though the latest version now passes [the test that originally failed](https://github.com/andyczerwonka/bundle-exercise/commit/3d78f68d1d5c3d7c863ade3a12ad16fe7435ddf4), the solution is still greedy... it's just a little smarted about it. An integer linear programming formulation might be the right choice for this TSP, maybe a weighted graph...
+The initial version [made an invalid assumption](https://github.com/andyczerwonka/bundle-exercise/issues/2) about the how to find the optimal solution. Even though the latest version now passes [the test that originally failed](https://github.com/andyczerwonka/bundle-exercise/commit/3d78f68d1d5c3d7c863ade3a12ad16fe7435ddf4), the solution is still greedy... it's just a little smarted about it. An integer linear programming formulation might be the right choice for this TSP.
 
 # Bundle Pricing
 This exercise is a common problem in e-commerce and brick-and-mortar retail systems.
